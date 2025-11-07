@@ -1,0 +1,58 @@
+\section{Background}
+\label{sec:background}
+\subsection{Problem Statement}
+Time series forecasting aims to predict future values $\mathbf{x}_{1:H}^0 \in \mathbb{R}^{d \times H}$ given past observations $\mathbf{x}_{-L+1:0}^0 \in \mathbb{R}^{d \times L}$, where $d$ is the number of variables, $H$ is the forecast horizon, and $L$ is the lookback window length. The core challenge lies in modeling the conditional distribution:
+\begin{equation}
+	p(\mathbf{x}_{1:H}^0 \mid \mathbf{x}_{-L+1:0}^0),
+\end{equation}
+which captures the temporal dependencies in the data. Traditional approaches (e.g., ARIMA, RNNs) often assume simple parametric forms or struggle with high-dimensional, non-Gaussian distributions.
+
+
+
+\subsection{Diffusion Models}
+Diffusion models \cite{Ho2020DDPM} are latent variable models with forward (noising) and backward (denoising) processes.
+
+\subsubsection{Forward Diffusion}
+Given input $\mathbf{x}^0$, the forward process gradually adds Gaussian noise over $K$ steps:
+\begin{equation}
+	q(\mathbf{x}^k \mid \mathbf{x}^{k-1}) = \mathcal{N}(\mathbf{x}^k; \sqrt{1-\beta_k}\mathbf{x}^{k-1}, \beta_k\mathbf{I}), \quad k=1,\dots,K,
+\end{equation}
+where $\beta_k \in [0,1]$ controls noise scales. A closed-form for step $k$ is:
+\begin{equation}
+	\mathbf{x}^k = \sqrt{\bar{\alpha}_k}\mathbf{x}^0 + \sqrt{1-\bar{\alpha}_k}\epsilon, \quad \epsilon \sim \mathcal{N}(\mathbf{0},\mathbf{I}),
+\end{equation}
+with $\bar{\alpha}_k = \prod_{s=1}^k (1-\beta_s)$.
+
+\subsubsection{Reverse Denoising}
+The backward process learns to iteratively denoise:
+\begin{equation}
+	p_\theta(\mathbf{x}^{k-1} \mid \mathbf{x}^k) = \mathcal{N}(\mathbf{x}^{k-1}; \mu_\theta(\mathbf{x}^k, k), \sigma_k^2\mathbf{I}),
+\end{equation}
+where $\mu_\theta$ is parameterized by a neural network. Two training strategies exist:
+\begin{itemize}
+	\item \textbf{Noise prediction}: Minimize $\mathcal{L}_\epsilon = \mathbb{E}_{k,\mathbf{x}^0,\epsilon} \|\epsilon - \epsilon_\theta(\mathbf{x}^k, k)\|^2$.
+	\item \textbf{Data prediction}: Minimize $\mathcal{L}_{\mathbf{x}} = \mathbb{E}_{\mathbf{x}^0,\epsilon,k} \|\mathbf{x}^0 - \mathbf{x}_\theta(\mathbf{x}^k, k)\|^2$.
+\end{itemize}
+
+\subsection{Conditional Diffusion Models}
+For time series prediction, the denoising process is conditioned on past observations $\mathbf{c} = \mathcal{F}(\mathbf{x}_{-L+1:0}^0)$ via:
+\begin{equation}
+	p_\theta(\mathbf{x}_{1:H}^{0:K} \mid \mathbf{c}) = p_\theta(\mathbf{x}_{1:H}^K) \prod_{k=1}^K p_\theta(\mathbf{x}_{1:H}^{k-1} \mid \mathbf{x}_{1:H}^k, \mathbf{c}),
+\end{equation}
+where $\mathcal{F}$ is a conditioning network (e.g., CNN or Transformer). The conditional mean $\mu_\theta(\mathbf{x}^k, k \mid \mathbf{c})$ leverages both noisy input and context.
+
+\subsection{Time Series to Image Transforms}
+To enhance diffusion models, time series are often mapped to images via invertible transforms:
+\begin{itemize}
+	\item \textbf{Delay Embedding}: For univariate series $x_{1:L}$, construct matrix:
+	\begin{equation}
+		X = \begin{bmatrix}
+			x_1 & x_{m+1} & \cdots \\
+			\vdots & \ddots & \vdots \\
+			x_n & \cdots & x_L
+		\end{bmatrix} \in \mathbb{R}^{n \times q},
+	\end{equation}
+	where $m,n$ are user-defined parameters and $q = \lfloor (L-n)/m \rfloor$.
+	
+\end{itemize}
+These transforms enable diffusion models to leverage spatial inductive biases for improved generation.

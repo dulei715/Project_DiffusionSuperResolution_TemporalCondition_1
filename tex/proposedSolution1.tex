@@ -1,0 +1,129 @@
+\section{Multi-Resolution Conditional Diffusion Model for Variable-Scale Time Series Forecasting}
+\label{sec:solution}
+
+\subsection{Overview}
+Our proposed \textbf{Multi-Resolution Conditional Diffusion Model (MR-CDM)} introduces a novel framework that addresses four critical challenges in time series forecasting: (1) multi-scale pattern capture, (2) variable-length input handling, (3) hierarchical trend decomposition, and (4) conditional generation with uncertainty quantification. The solution integrates three key innovations:
+
+\begin{itemize}
+    \item \textbf{Resolution-Agnostic Input Representation}: Through delay embedding that transforms arbitrary-length time series into structured images
+    \item \textbf{Hierarchical Trend Extraction}: Multi-scale decomposition that automatically separates short-term fluctuations from long-term patterns
+    \item \textbf{Conditional Diffusion Process}: Noise prediction network guided by both historical context and coarse-grained trend information
+\end{itemize}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.95\linewidth]{model_architecture}
+    \caption{Architecture of the Multi-Resolution Conditional Diffusion Model (MR-CDM) showing (a) the variable-scale input processing, (b) multi-level trend decomposition, and (c) the conditional denoising process.}
+    \label{fig:architecture}
+\end{figure}
+
+\subsection{Resolution-Independent Input Transformation}
+The input module handles arbitrary-length sequences $x_{1:L} \in \mathbb{R}^L$ through an adaptive delay embedding:
+
+\begin{equation}
+    \mathbf{X} = \mathcal{T}(x_{1:L}; m,n) \in \mathbb{R}^{n \times q(m,n,L)}
+\end{equation}
+
+where the transformation $\mathcal{T}$ implements:
+
+\begin{equation}
+    q(m,n,L) = \left\lfloor \frac{L - n}{m} \right\rfloor + 1 + \mathbb{I}_{\text{pad}}(L,m,n)
+\end{equation}
+
+with padding indicator function $\mathbb{I}_{\text{pad}}$ that dynamically adjusts for length mismatches. This guarantees:
+
+\begin{itemize}
+    \item \textbf{Dimensionality Preservation}: $\|\mathcal{T}^{-1}(\mathcal{T}(x)) - x\|_2 < \epsilon$ for $\epsilon \rightarrow 0$
+    \item \textbf{Scale Invariance}: Consistent representation for $L \in [L_{\min}, \infty)$
+\end{itemize}
+
+\subsection{Multi-Resolution Trend Pyramid}
+The decomposition constructs $S$ resolution levels through recursive downsampling:
+
+\begin{equation}
+    \mathbf{X}_s = \mathcal{D}_s(\mathbf{X}_{s-1}) = \text{AvgPool}(\text{ZeroPad}_{2^s}(\mathbf{X}_{s-1}))
+\end{equation}
+
+yielding trend components $\{\mathbf{X}_s\}_{s=1}^S$ where:
+
+\begin{equation}
+    \text{Res}(\mathbf{X}_s) = \frac{\text{Res}(\mathbf{X}_1)}{2^{s-1}} \quad \text{for} \quad s = 2,...,S
+\end{equation}
+
+The pyramid enables:
+\begin{itemize}
+    \item Coarse-level modeling of global trends ($s = S$)
+    \item Fine-level capture of local variations ($s = 1$)
+    \item Intermediate representations for meso-scale patterns
+\end{itemize}
+
+\subsection{Conditional Diffusion Process}
+The core innovation combines:
+
+\subsubsection{Multi-Scale Conditioning}
+The guidance signal $\mathbf{c}_s^t$ at level $s$ and timestep $t$ integrates:
+
+\begin{equation}
+    \mathbf{c}_s^t = \text{MLP}(\mathbf{z}_{\text{hist}}^s \oplus \widehat{\mathbf{Y}}_{s+1}^t)
+\end{equation}
+
+where:
+\begin{itemize}
+    \item $\mathbf{z}_{\text{hist}}^s = \text{TCN}(\mathbf{X}_s)$ (temporal convolutional network)
+    \item $\widehat{\mathbf{Y}}_{s+1}^t$ is the coarser-level prediction
+    \item $\oplus$ denotes channel-wise concatenation
+\end{itemize}
+
+\subsubsection{Adaptive Denoising}
+The noise prediction network $\epsilon_\theta$ implements:
+
+\begin{equation}
+    \epsilon_\theta^{(s)}(\mathbf{Y}_s^t, t, \mathbf{c}_s^t) = \text{U-Net}(\text{Conv1D}(\mathbf{Y}_s^t) \oplus \mathbf{E}(t) \oplus \mathbf{c}_s^t)
+\end{equation}
+
+with timestep embedding $\mathbf{E}(t)$ and U-Net architecture that maintains resolution-specific features.
+
+\subsection{Training and Inference}
+\subsubsection{Multi-Resolution Training}
+The joint optimization minimizes:
+
+\begin{equation}
+    \mathcal{L} = \sum_{s=1}^S \lambda_s \mathbb{E}_{t,\epsilon}[\|\epsilon - \epsilon_\theta^{(s)}(\mathbf{Y}_s^t, t, \mathbf{c}_s^t)\|_2^2]
+\end{equation}
+
+with resolution-specific weights $\lambda_s = 2^{s-S}$ emphasizing coarse levels.
+
+\subsubsection{Iterative Refinement Prediction}
+The inference process proceeds top-down:
+
+\begin{algorithm}[H]
+\caption{MR-CDM Prediction}
+\begin{algorithmic}[1]
+\STATE Initialize $\widehat{\mathbf{Y}}_S^T \sim \mathcal{N}(0,\mathbf{I})$
+\FOR{$s = S$ \textbf{downto} $1$}
+    \FOR{$t = T$ \textbf{downto} $1$}
+        \STATE $\widehat{\mathbf{Y}}_s^{t-1} = \alpha_t\widehat{\mathbf{Y}}_s^t + \sigma_t\epsilon_\theta^{(s)}(\widehat{\mathbf{Y}}_s^t,t,\mathbf{c}_s^t)$
+    \ENDFOR
+    \IF{$s > 1$}
+        \STATE Upsample $\widehat{\mathbf{Y}}_s^0$ to initialize $\widehat{\mathbf{Y}}_{s-1}^T$
+    \ENDIF
+\ENDFOR
+\RETURN $\mathcal{T}^{-1}(\widehat{\mathbf{Y}}_1^0)$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{System Properties}
+The complete framework provides:
+
+\begin{itemize}
+    \item \textbf{Resolution Flexibility}: Handles inputs with $L \in [64, \infty)$ through adaptive padding
+    \item \textbf{Multi-Scale Analysis}: Automatic decomposition into $S$ temporal scales
+    \item \textbf{Conditional Uncertainty}: Diffusion process generates probabilistic forecasts
+    \item \textbf{End-to-End Training}: Joint optimization across all resolution levels
+\end{itemize}
+
+The architecture's modular design enables efficient computation through:
+\begin{equation}
+    \mathcal{C}(L) = O(S \cdot L \log L) \quad \text{FLOPs}
+\end{equation}
+making it scalable to long sequences while maintaining multi-resolution modeling capabilities.

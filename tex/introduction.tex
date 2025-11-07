@@ -1,0 +1,26 @@
+\section{Introduction}
+
+
+Time series data is ubiquitous in real-world applications, playing a crucial role in decision-making processes across various domains. From stock price forecasting in finance and patient health monitoring in healthcare to machine condition monitoring in manufacturing and traffic flow optimization in transportation, accurate time series prediction enables users to identify underlying patterns and make informed decisions based on historical data. Over the years, significant progress has been made in time series analysis through the development of deep neural networks, including Recurrent Neural Networks (RNNs), Convolutional Neural Networks (CNNs), and Transformers. These models have demonstrated remarkable capabilities in capturing temporal dependencies and improving prediction accuracy.  
+
+Recently, diffusion models have emerged as a powerful generative framework, showing great potential in time series forecasting due to their ability to model complex data distributions. Several diffusion-based approaches have been proposed to enhance time series prediction by iteratively refining noise into structured signals. However, time series data often exhibits intricate multi-scale patterns, making it challenging for standard diffusion models to capture both long-term trends and short-term fluctuations effectively. To address this, some studies have integrated trend decomposition techniques with diffusion models, demonstrating improved performance by explicitly modeling different temporal scales (e.g., trend, seasonality, and residuals).  
+
+Despite these advancements, existing diffusion-based time series models typically require fixed-length input windows, limiting their flexibility in real-world scenarios where time series may vary in length. A recent study by Ilan Naiman et al. explored a unified diffusion model capable of handling variable-length time series by transforming sequential data into image-like representations. While promising, this approach may not fully exploit the inherent temporal structures of time series data.  
+
+To overcome these limitations, we propose a novel diffusion model framework that (1) adapts to time series of varying lengths without requiring fixed window sizes and (2) incorporates multi-scale trend decomposition to enhance prediction accuracy by separately modeling different temporal patterns. Our method leverages the generative power of diffusion models while ensuring robustness across diverse time series lengths and scales. Experimental results on real-world datasets demonstrate that our approach outperforms existing diffusion-based and non-diffusion-based baselines, providing more accurate and reliable forecasts.  
+
+The contributions of this work are summarized as follows:  
+\begin{itemize}[leftmargin=*]
+	\item We introduce a flexible diffusion model architecture capable of processing time series of arbitrary lengths, eliminating the constraint of fixed input windows. 
+	\item  We integrate multi-scale trend decomposition into the diffusion process, enabling explicit modeling of both long-term trends and fine-grained fluctuations.
+	\item We conduct extensive experiments on multiple real-world datasets, demonstrating the superiority of our method over state-of-the-art time series forecasting models.
+\end{itemize}
+
+This paper is structured as follows: Section 2 reviews related work in the fields of time series forecasting and diffusion models. Section 3 introduces the necessary background knowledge. Section 4 provides a detailed presentation of our proposed MR-CDM framework. Section 5 describes the experimental setup and presents the results. Finally, Section 6 concludes the paper and discusses potential directions for future research.
+
+
+
+
+
+
+
