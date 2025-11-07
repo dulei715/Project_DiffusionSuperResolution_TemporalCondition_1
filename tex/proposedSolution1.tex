@@ -10,12 +10,12 @@ Our proposed \textbf{Multi-Resolution Conditional Diffusion Model (MR-CDM)} intr
     \item \textbf{Conditional Diffusion Process}: Noise prediction network guided by both historical context and coarse-grained trend information
 \end{itemize}
 
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=0.95\linewidth]{model_architecture}
-    \caption{Architecture of the Multi-Resolution Conditional Diffusion Model (MR-CDM) showing (a) the variable-scale input processing, (b) multi-level trend decomposition, and (c) the conditional denoising process.}
-    \label{fig:architecture}
-\end{figure}
+%\begin{figure}[t]
+%    \centering
+%    \includegraphics[width=0.95\linewidth]{model_architecture}
+%    \caption{Architecture of the Multi-Resolution Conditional Diffusion Model (MR-CDM) showing (a) the variable-scale input processing, (b) multi-level trend decomposition, and (c) the conditional denoising process.}
+%    \label{fig:architecture}
+%\end{figure}
 
 \subsection{Resolution-Independent Input Transformation}
 The input module handles arbitrary-length sequences $x_{1:L} \in \mathbb{R}^L$ through an adaptive delay embedding:
@@ -96,20 +96,20 @@ with resolution-specific weights $\lambda_s = 2^{s-S}$ emphasizing coarse levels
 \subsubsection{Iterative Refinement Prediction}
 The inference process proceeds top-down:
 
-\begin{algorithm}[H]
+\begin{algorithm}[t]
 \caption{MR-CDM Prediction}
-\begin{algorithmic}[1]
-\STATE Initialize $\widehat{\mathbf{Y}}_S^T \sim \mathcal{N}(0,\mathbf{I})$
-\FOR{$s = S$ \textbf{downto} $1$}
-    \FOR{$t = T$ \textbf{downto} $1$}
-        \STATE $\widehat{\mathbf{Y}}_s^{t-1} = \alpha_t\widehat{\mathbf{Y}}_s^t + \sigma_t\epsilon_\theta^{(s)}(\widehat{\mathbf{Y}}_s^t,t,\mathbf{c}_s^t)$
-    \ENDFOR
-    \IF{$s > 1$}
-        \STATE Upsample $\widehat{\mathbf{Y}}_s^0$ to initialize $\widehat{\mathbf{Y}}_{s-1}^T$
-    \ENDIF
-\ENDFOR
-\RETURN $\mathcal{T}^{-1}(\widehat{\mathbf{Y}}_1^0)$
-\end{algorithmic}
+%\begin{algorithmic}[1]
+Initialize $\widehat{\mathbf{Y}}_S^T \sim \mathcal{N}(0,\mathbf{I})$\;
+\For{$s = S$ \textbf{downto} $1$} {
+	 \For{$t = T$ \textbf{downto} $1$}{
+		$\widehat{\mathbf{Y}}_s^{t-1} = \alpha_t\widehat{\mathbf{Y}}_s^t + \sigma_t\epsilon_\theta^{(s)}(\widehat{\mathbf{Y}}_s^t,t,\mathbf{c}_s^t)$\;
+	}
+	\If{$s > 1$} {
+		Upsample $\widehat{\mathbf{Y}}_s^0$ to initialize $\widehat{\mathbf{Y}}_{s-1}^T$\;
+	}
+}
+\Return{$\mathcal{T}^{-1}(\widehat{\mathbf{Y}}_1^0)$}\;
+%\end{algorithmic}
 \end{algorithm}
 
 \subsection{System Properties}
