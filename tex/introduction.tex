@@ -5,20 +5,18 @@ Time series data is ubiquitous in real-world applications, playing a crucial rol
 Recently, diffusion models have emerged as a powerful generative framework, showing great potential in time series forecasting due to their ability to model complex data distributions. Several diffusion-based approaches have been proposed to enhance time series prediction by iteratively refining noise into structured signals. However, time series data often exhibits intricate multi-scale patterns, making it challenging for standard diffusion models to capture both long-term trends and short-term fluctuations effectively. To address this, some studies have integrated trend decomposition techniques with diffusion models, demonstrating improved performance by explicitly modeling different temporal scales (e.g., trend, seasonality, and residuals).  
 
 Despite these advancements, existing diffusion-based time series models typically require fixed-length input windows, limiting their flexibility in real-world scenarios where time series may vary in length. A recent study by Ilan Naiman et al. explored a unified diffusion model capable of handling variable-length time series by transforming sequential data into image-like representations. While promising, this approach may not fully exploit the inherent temporal structures of time series data.  
-
-We consider the scenario of forecasting electricity demand across a city, where sensors operate at heterogeneous sampling rates—some record data every five minutes, while others update only once per hour. These signals inherently exhibit multi-resolution temporal structures: high-frequency sensors capture rapid local fluctuations such as household usage, while low-frequency ones reflect long-term regional trends like industrial load variations,as illustrated in Figure 1. However, existing time-series forecasting models, whether based on RNNs, Transformers, or diffusion mechanisms, typically assume a fixed sampling rate and a single-scale representation. When such heterogeneous signals are forcibly aligned to a common temporal resolution through resampling or truncation, the model either loses fine-grained local details or distorts global trends, making it ineffective for variable-length and multi-scale temporal dynamics
-
-.\begin{figure}
+\begin{figure}
     \raggedleft           
     \includegraphics[width=\linewidth]{figures/Ex}
     \caption{Multi-resolution time series example: high-frequency sensors capture short-term fluctuations, while low-frequency sensors reflect long-term trends. Aligning them to a single resolution causes information loss, motivating our proposed MR-CDM framework.
     }
     \label{fig:ex}
 \end{figure}
+We consider the scenario of forecasting electricity demand across a city, where sensors operate at heterogeneous sampling rates—some record data every five minutes, while others update only once per hour. These signals inherently exhibit multi-resolution temporal structures: high-frequency sensors capture rapid local fluctuations such as household usage, while low-frequency ones reflect long-term regional trends like industrial load variations,as illustrated in Figure 1. However, existing time-series forecasting models, whether based on RNNs, Transformers, or diffusion mechanisms, typically assume a fixed sampling rate and a single-scale representation. When such heterogeneous signals are forcibly aligned to a common temporal resolution through resampling or truncation, the model either loses fine-grained local details or distorts global trends, making it ineffective for variable-length and multi-scale temporal dynamics.
+
+
 
 To overcome these limitations, we propose a novel diffusion model framework that (1) adapts to time series of varying lengths without requiring fixed window sizes and (2) incorporates multi-scale trend decomposition to enhance prediction accuracy by separately modeling different temporal patterns. Our method leverages the generative power of diffusion models while ensuring robustness across diverse time series lengths and scales. Experimental results on real-world datasets demonstrate that our approach outperforms existing diffusion-based and non-diffusion-based baselines, providing more accurate and reliable forecasts.  
-
-
 
 The contributions of this work are summarized as follows:  
 \begin{itemize}[leftmargin=*]
