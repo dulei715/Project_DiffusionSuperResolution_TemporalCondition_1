@@ -3,7 +3,7 @@
 \renewcommand{\thesection}{\arabic{section}}       
 Time series forecasting is the process of generating a future segment of a time series by applying specific time series forecasting algorithms to historical time series data. For example, as shown in Figure 1, a historical wind speed series of 100 time units is used to generate a future wind speed series of 50 time units.Time series forecasting has undergone three evolutionary phases: statistical modeling, deep learning revolution, and the emerging diffusion paradigm. We critically analyze these paradigms with a focus on their capabilities and limitations.
 
-\begin{figure*}[!ht]
+\begin{figure*}[!ht]\label{related:forecast}
 \centering
 \includegraphics[width=0.9\linewidth]{figures/figure2.eps}
 \caption{Time series forecast}
@@ -45,10 +45,6 @@ Time series forecasting is the process of generating a future segment of a time 
 
 
 
-
-
-
-
 \subsection{Statistical and Classical Machine Learning Methods}
 Early approaches to time series forecasting primarily relied on explicit statistical assumptions about temporal dependencies and noise distributions.
 
@@ -56,7 +52,7 @@ Linear models such as the Autoregressive Integrated Moving Average (ARIMA) model
 
 Beyond parametric formulations, nonparametric smoothing methods such as the Holt–Winters exponential smoothing [3] empirically model trend–seasonality interactions without requiring strong distributional assumptions. The Error–Trend–Seasonality (ETS) framework [4] unifies these techniques by decomposing time series into interpretable components under a state-space representation, supporting both additive and multiplicative structures.
 
-From a probabilistic perspective, Gaussian Process (GP) models [5] introduced a Bayesian approach to time series prediction, providing principled uncertainty quantification through kernel-based covariance functions. These models capture local smoothness and uncertainty propagation effectively in low-dimensional settings.
+From a probabilistic perspective, Gaussian Process (GP) models~[5] introduced a Bayesian approach to time series prediction, providing principled uncertainty quantification through kernel-based covariance functions. These models capture local smoothness and uncertainty propagation effectively in low-dimensional settings.
 
 % \begin{itemize}
 % 	\item \textbf{Linear Models}:
@@ -118,7 +114,7 @@ Building on deep learning successes, diffusion models have emerged as powerful g
 \textbf{Method} & \textbf{Var.-Len.} & \textbf{Multi-Scale} \\
 \midrule
 \multicolumn{3}{@{}l}{\textit{Traditional Statistical}} \\
-\quad ARIMA/SARIMA & $\times$ & $\times$ \\
+\quad ARIMA/SARIMA~\cite{2013ARIMA} & $\times$ & $\times$ \\
 \quad VAR            & $\times$ & $\times$ \\
 \quad Holt-Winters   & $\times$ & $\times$ (seasonal) \\
 \quad Gaussian Proc. & $\checkmark$ & $\times$ \\

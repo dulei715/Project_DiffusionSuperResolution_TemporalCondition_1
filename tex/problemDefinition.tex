@@ -1,12 +1,12 @@
 \section{Background}\label{sec:background}
 \subsection{Problem Statement}
 Time series forecasting aims to predict future values $\mathbf{x}_{1:H}^0 \in \mathbb{R}^{d \times H}$ given past observations $\mathbf{x}_{-L+1:0}^0 \in \mathbb{R}^{d \times L}$, where $d$ is the number of variables, $H$ is the forecast horizon, and $L$ is the lookback window length. The core challenge lies in modeling the conditional distribution:
-\begin{equation}
+\begin{equation}\label{eq:distribution}
 	p(\mathbf{x}_{1:H}^0 \mid \mathbf{x}_{-L+1:0}^0),
 \end{equation}
 which captures the temporal dependencies in the data. Traditional approaches (e.g., ARIMA, RNNs) often assume simple parametric forms or struggle with high-dimensional, non-Gaussian distributions.
 
-
+Equation~\eqref{eq:distribution} xxxx.
 
 \subsection{Diffusion Models}
 Diffusion models \cite{Ho2020DDPM} are latent variable models with forward (noising) and backward (denoising) processes.

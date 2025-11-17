@@ -11,7 +11,7 @@ Standard diffusion models struggle to capture these heterogeneous temporal struc
 To mitigate this limitation, some studies have incorporated trend-decomposition techniques into diffusion models, demonstrating improved performance gains by explicitly modeling temporal components such as trend, seasonality, and residuals variations.  
 
 Although trend-aware diffusion models alleviate part of the multi-scale modeling challenge, existing approaches still rely on fixed-length input windows, limiting their applicability in real-world scenarios where sequence lengths vary. 
-A recent unified diffusion framework proposed by Ilan Naiman et al. attempts to support variable-length inputs by transforming one dimensional sequences into two-dimensional image-like representations. 
+A recent unified diffusion framework proposed by Naiman et al.~\cite{naiman_utilizing_nodate} attempts to support variable-length inputs by transforming one dimensional sequences into two-dimensional image-like representations. 
 While this approach improves flexibility, it insufficiently preserves the intrinsic temporal structures of time series data.  
 
 \begin{figure}
