@@ -1,31 +1,51 @@
 \section{Introduction}
 
-Time series data is ubiquitous in real-world applications, playing a crucial role in decision-making processes across various domains. From stock price forecasting in finance and patient health monitoring in healthcare to machine condition monitoring in manufacturing and traffic flow optimization in transportation, accurate time series prediction enables users to identify underlying patterns and make informed decisions based on historical data. Over the years, significant progress has been made in time series analysis through the development of deep neural networks, including Recurrent Neural Networks (RNNs), Convolutional Neural Networks (CNNs), and Transformers. These models have demonstrated remarkable capabilities in capturing temporal dependencies and improving prediction accuracy.  
+Time series data is ubiquitous in real-world systems and constitutes a fundamental basic for decision-making in numerous application domains. 
+Tasks such as stock price forecasting in finance, patient health monitoring in healthcare, machine condition monitoring in manufacturing, and traffic flow optimization in transportation all rely on accurate time series prediction to uncover underlying temporal patterns and support data-driven decision processes. 
+With the rapid development of deep learning, models such as Recurrent Neural Networks (RNNs), Convolutional Neural Networks (CNNs), and Transformers-based architectures have achieved substantial progress by effectively capturing temporal dependencies and improving forecasting accuracy. 
 
-Recently, diffusion models have emerged as a powerful generative framework, showing great potential in time series forecasting due to their ability to model complex data distributions. Several diffusion-based approaches have been proposed to enhance time series prediction by iteratively refining noise into structured signals. However, time series data often exhibits intricate multi-scale patterns, making it challenging for standard diffusion models to capture both long-term trends and short-term fluctuations effectively. To address this, some studies have integrated trend decomposition techniques with diffusion models, demonstrating improved performance by explicitly modeling different temporal scales (e.g., trend, seasonality, and residuals).  
+Recently, diffusion models have emerged as a powerful class of generative framework and have attracted increasing attention in time series forecasting due to their capacity to model complex data distributions. 
+Several diffusion-based methods have been proposed to progressively refine noisy sequences into structured temporal signals, thereby enhance time series prediction. 
+However, real-world time series often exhibit rich multi-scale characteristics, including long-term trends, periodic patterns, and short-term fluctuations. 
+Standard diffusion models struggle to capture these heterogeneous temporal structures simultaneously. 
+To mitigate this limitation, some studies have incorporated trend-decomposition techniques into diffusion models, demonstrating improved performance gains by explicitly modeling temporal components such as trend, seasonality, and residuals variations.  
 
-Despite these advancements, existing diffusion-based time series models typically require fixed-length input windows, limiting their flexibility in real-world scenarios where time series may vary in length. A recent study by Ilan Naiman et al. explored a unified diffusion model capable of handling variable-length time series by transforming sequential data into image-like representations. While promising, this approach may not fully exploit the inherent temporal structures of time series data.  
+Although trend-aware diffusion models alleviate part of the multi-scale modeling challenge, existing approaches still rely on fixed-length input windows, limiting their applicability in real-world scenarios where sequence lengths vary. 
+A recent unified diffusion framework proposed by Ilan Naiman et al. attempts to support variable-length inputs by transforming one dimensional sequences into two-dimensional image-like representations. 
+While this approach improves flexibility, it insufficiently preserves the intrinsic temporal structures of time series data.  
+
 \begin{figure}
-    \raggedleft           
-    \includegraphics[width=\linewidth]{figures/Ex.eps}
-    \caption{Multi-resolution time series example: high-frequency sensors capture short-term fluctuations, while low-frequency sensors reflect long-term trends. Aligning them to a single resolution causes information loss, motivating our proposed MR-CDM framework.
-    }
-    \label{fig:ex}
+	\raggedleft           
+	\includegraphics[width=\linewidth]{figures/Ex.eps}
+	\caption{Multi-resolution time series example: high-frequency sensors capture short-term fluctuations, while low-frequency sensors reflect long-term trends. Aligning them to a single resolution causes information loss, motivating our proposed MR-CDM framework.
+	}
+	\label{fig:ex}
 \end{figure}
-We consider the scenario of forecasting electricity demand across a city, where sensors operate at heterogeneous sampling rates—some record data every five minutes, while others update only once per hour. These signals inherently exhibit multi-resolution temporal structures: high-frequency sensors capture rapid local fluctuations such as household usage, while low-frequency ones reflect long-term regional trends like industrial load variations,as illustrated in Figure 1. However, existing time-series forecasting models, whether based on RNNs, Transformers, or diffusion mechanisms, typically assume a fixed sampling rate and a single-scale representation. When such heterogeneous signals are forcibly aligned to a common temporal resolution through resampling or truncation, the model either loses fine-grained local details or distorts global trends, making it ineffective for variable-length and multi-scale temporal dynamics.
+\begin{example}
+	Consider the task of forecasting city-wide electricity demand, where sensors operate at heterogeneous sampling rates--some report measurements every five minutes, while others update only once per hour. 
+	These signals naturally exhibit multi-resolution temporal structures: high-frequency sensors capture rapid, local fluctuations such as household consumption, whereas low-frequency sensors primarily reflect long-term regional trends, including industrial load variations, as illustrated in Figure 1. However, most existing time-series forecasting models--including RNN-, Transformer-, and Diffusion-based architectures--implicitly assume a fixed sampling rate and a single-scale temporal representation. 
+	When heterogeneous signals are forcibly unified into a common temporal resolution through resampling or truncation, models inevitably lose  fine-grained local information or distort global temporal structures, thereby limiting their ability to effectively handle variable-length and inherently multi-scale temporal dynamics.
+\end{example}
 
-
-
-To overcome these limitations, we propose a novel diffusion model framework that (1) adapts to time series of varying lengths without requiring fixed window sizes and (2) incorporates multi-scale trend decomposition to enhance prediction accuracy by separately modeling different temporal patterns. Our method leverages the generative power of diffusion models while ensuring robustness across diverse time series lengths and scales. Experimental results on real-world datasets demonstrate that our approach outperforms existing diffusion-based and non-diffusion-based baselines, providing more accurate and reliable forecasts.  
+To address the aforementioned limitations, we propose a novel diffusion-based forecasting framework that simultaneously 
+(1) accommodates variable-length time series without relying on fixed-size input window, and 
+(2) integrates multi-scale trend decomposition to explicitly model temporal structures at different resolutions. 
+Our method preserves the generative advantages of diffusion models while enhancing robustness across heterogeneous sequence length and temporal scales. 
+Comprehensive experiments on multiple real-world datasets demonstrate that our approach consistently outperforms both diffusion-based and conventional forecasting baselines, yielding more accurate and reliable forecasts.  
 
 The contributions of this work are summarized as follows:  
 \begin{itemize}[leftmargin=*]
-	\item We introduce a flexible diffusion model architecture capable of processing time series of arbitrary lengths, eliminating the constraint of fixed input windows. 
-	\item We integrate multi-scale trend decomposition into the diffusion process, enabling explicit modeling of both long-term trends and fine-grained fluctuations.
-	\item We conduct extensive experiments on multiple real-world datasets, demonstrating the superiority of our method over state-of-the-art time series forecasting models.
+	\item We propose a flexible diffusion architecture capable of processing time series of arbitrary lengths, thereby eliminating the fixed-window constraint imposed by most existing forecasting models. 
+	\item We integrate a hierarchical multi-scale trend decomposition module into diffusion process, enabling explicit modeling of both long-term temporal trends and fine-grained local fluctuations.
+	\item We conduct comprehensive experiments on multiple real-world datasets, demonstrating the superiority of our method over state-of-the-art time series forecasting models.
 \end{itemize}
 
-This paper is structured as follows: Section 2 reviews related work in the fields of time series forecasting and diffusion models. Section 3 introduces the necessary background knowledge. Section 4 provides a detailed presentation of our proposed MR-CDM framework. Section 5 describes the experimental setup and presents the results. Finally, Section 6 concludes the paper and discusses potential directions for future research.
+The remainder of this paper is organized as follows: 
+Section 2 reviews related literature on time series forecasting and diffusion-based generative models. 
+Section 3 introduces the necessary background and preliminaries. 
+Section 4 presents the proposed MR-CDM framework in detail. 
+Section 5 outlines the experimental setup and reports empirical the results. 
+Finally, Section 6 concludes the paper and discusses potential directions for future research.
 
 
 
