@@ -1,7 +1,7 @@
 \section{Related Work}\label{sec:related}
 \renewcommand{\thesubsection}{\Alph{subsection}}   
 \renewcommand{\thesection}{\arabic{section}}       
-Time series forecasting is the process of generating a future segment of a time series by applying specific time series forecasting algorithms to historical time series data. For example, as shown in Figure 1, a historical wind speed series of 100 time units is used to generate a future wind speed series of 50 time units.Time series forecasting has undergone three evolutionary phases: statistical modeling, deep learning revolution, and the emerging diffusion paradigm. We critically analyze these paradigms with a focus on their capabilities and limitations.
+Time series forecasting is the process of generating a future segment of a time series by applying specific time series forecasting algorithms to historical time series data. For example, as shown in Figure~\ref{fig:ex}, a historical wind speed series of 100 time units is used to generate a future wind speed series of 50 time units.Time series forecasting has undergone three evolutionary phases: statistical modeling, deep learning revolution, and the emerging diffusion paradigm. We critically analyze these paradigms with a focus on their capabilities and limitations.
 
 \begin{figure*}[!ht]\label{related:forecast}
 \centering
@@ -45,7 +45,8 @@ Time series forecasting is the process of generating a future segment of a time 
 
 
 
-\subsection{Statistical and Classical Machine Learning Methods}
+%\subsection{Statistical and Classical Machine Learning Methods}
+\subsection{Statistical Modeling}
 Early approaches to time series forecasting primarily relied on explicit statistical assumptions about temporal dependencies and noise distributions.
 
 Linear models such as the Autoregressive Integrated Moving Average (ARIMA) model [1] have long dominated classical forecasting, offering interpretable formulations under stationarity and linearity assumptions. Its seasonal variant, SARIMA, further extends the framework to capture periodic fluctuations. The Vector Autoregression (VAR) model [2] generalizes these ideas to the multivariate setting, enabling linear inter-series dependency modeling across multiple correlated variables.
@@ -104,7 +105,8 @@ To overcome the sequential bottleneck of recurrent networks, convolution-based m
 
 More recently, attention-based architectures have advanced forecasting by modeling global temporal dependencies. The Transformer [11] introduced self-attention to directly capture long-range interactions, achieving strong performance across diverse sequence tasks. Its variants, Informer [12] and Autoformer [13], further improved efficiency and interpretability through sparse attention and frequency-domain autocorrelation, respectively, making attention mechanisms a dominant paradigm in long-horizon time series forecasting.
 
-\subsection{Diffusion Models in Time Series}
+%\subsection{Diffusion Models in Time Series}
+\subsection{Emerging Diffusion Paradigm}
 Building on deep learning successes, diffusion models have emerged as powerful generative tools:recent research has shifted toward generative frameworks that model the full predictive distribution of time series rather than point estimates. TimeGrad [14] first introduced autoregressive denoising diffusion for multivariate probabilistic forecasting, demonstrating the ability of diffusion models to capture uncertainty through iterative noise refinement. CSDI [15] extended this idea with conditional score-based diffusion, enabling flexible handling of missing observations and context-aware forecasting. Subsequent methods incorporated learned guidance, hybrid backbones, and structured state-space formulations [16–17] to improve sampling efficiency and capture long-range temporal dependencies.
 %\vspace{-15pt}
 \begin{table}[htbp]
