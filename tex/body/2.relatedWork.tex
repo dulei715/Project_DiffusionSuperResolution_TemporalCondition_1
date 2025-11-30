@@ -117,24 +117,24 @@ Building on deep learning successes, diffusion models have emerged as powerful g
 \midrule
 \multicolumn{3}{@{}l}{\textit{Traditional Statistical}} \\
 \quad ARIMA/SARIMA~\cite{2013ARIMA} & $\times$ & $\times$ \\
-\quad VAR            & $\times$ & $\times$ \\
-\quad Holt-Winters   & $\times$ & $\times$ (seasonal) \\
-\quad Gaussian Proc. & $\checkmark$ & $\times$ \\
-\quad LSTM/GRU       & \checkmark & $\times$ \\
-\quad DeepAR         & $\times$ & $\times$ \\
+\quad VAR~\cite{Zivot2003}            & $\times$ & $\times$ \\
+\quad Holt-Winters~\cite{KOEHLER2001269}   & $\times$ & $\times$ (seasonal) \\
+\quad Gaussian Process~\cite{2005Gaussian} & $\checkmark$ & $\times$ \\
+\quad LSTM/GRU~\cite{HSJ1997,2014Learning}       & \checkmark & $\times$ \\
+\quad DeepAR~\cite{2020DeepAR}         & $\times$ & $\times$ \\
 \midrule
 \multicolumn{3}{@{}l}{\textit{Deep Learning}} \\
-\quad WaveNet/TCN    & \checkmark & \checkmark$^\dag$ \\
-\quad Transformer    & \checkmark & $\times$ \\
-\quad Informer       & \checkmark & $\times$ \\
-\quad Autoformer     & \checkmark & \checkmark$^\dag$ \\
-\quad TimeGrad       & $\times$ & $\times$ \\
+\quad WaveNet/TCN~\cite{2016WaveNet,DBLP:conf/iclr/BaiKK19}    & \checkmark & \checkmark$^\dag$ \\
+\quad Transformer~\cite{2017Attention}    & \checkmark & $\times$ \\
+\quad Informer~\cite{2020Informer}       & \checkmark & $\times$ \\
+\quad Autoformer~\cite{2021Autoformer}     & \checkmark & \checkmark$^\dag$ \\
+\quad TimeGrad~\cite{2021Autoregressive}       & $\times$ & $\times$ \\
 \midrule
 \multicolumn{3}{@{}l}{\textit{Diffusion Models}} \\
-\quad CSDI           & $\times$ & $\times$ \\
-\quad SSSD            & \checkmark & $\times$ \\
-\quad TSDiff          & \checkmark & $\times$ \\
-\quad DiffSTG         & $\times$ & $\times$ \\
+\quad CSDI~\cite{2021CSDI}           & $\times$ & $\times$ \\
+\quad SSSD~\cite{alcaraz2022diffusion}            & \checkmark & $\times$ \\
+\quad TSDiff~\cite{naiman_utilizing_nodate}          & \checkmark & $\times$ \\
+\quad DiffSTG~\cite{wen2023DiffSTG}         & $\times$ & $\times$ \\
 \quad \textbf{Our Method} & $\boldsymbol{\checkmark}$ & $\boldsymbol{\checkmark}$ \\ 
 \bottomrule
 \smallskip
@@ -159,7 +159,7 @@ Building on deep learning successes, diffusion models have emerged as powerful g
 % \end{itemize}
 
 
-\vspace{-15pt}
+%\vspace{-15pt}
 
 
 \textbf{Critical Gap:} Existing diffusion approaches exhibit three key limitations,which reflected in the Table 1: 
