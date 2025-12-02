@@ -107,7 +107,7 @@ More recently, attention-based architectures have advanced forecasting by modeli
 
 %\subsection{Diffusion Models in Time Series}
 \subsection{Emerging Diffusion Paradigm}
-Building on deep learning successes, diffusion models have emerged as powerful generative tools:recent research has shifted toward generative frameworks that model the full predictive distribution of time series rather than point estimates. TimeGrad~\cite{2021Autoregressive} first introduced autoregressive denoising diffusion for multivariate probabilistic forecasting, demonstrating the ability of diffusion models to capture uncertainty through iterative noise refinement. CSDI~\cite{2021CSDI} extended this idea with conditional score-based diffusion, enabling flexible handling of missing observations and context-aware forecasting. Subsequent methods incorporated learned guidance, hybrid backbones, and structured state-space formulations~\cite{alcaraz2022diffusion,naiman_utilizing_nodate} to improve sampling efficiency and capture long-range temporal dependencies.
+Building on deep learning successes, diffusion models have emerged as powerful generative tools:recent research has shifted toward generative frameworks that model the full predictive distribution of time series rather than point estimates. TimeGrad~\cite{2021Autoregressive} first introduced autoregressive denoising diffusion for multivariate probabilistic forecasting, demonstrating the ability of diffusion models to capture uncertainty through iterative noise refinement. CSDI~\cite{2021CSDI} extended this idea with conditional score-based diffusion, enabling flexible handling of missing observations and context-aware forecasting. For efficient long-range sequence modeling, SSSD~\cite{alcaraz2022diffusion} incorporated state space models into the diffusion framework, addressing the computational challenges of capturing long-term dependencies. TSDiff~\cite{naiman_utilizing_nodate} proposed a novel approach by encoding variable-length time series into 2D representations to accommodate the flexibility of sequence lengths. To handle spatio-temporal data, DiffSTG~\cite{wen2023DiffSTG} embedded graph structures into diffusion models, enabling effective modeling of both spatial correlations and temporal dynamics.Subsequent methods incorporated learned guidance, hybrid backbones, and structured state-space formulations to improve sampling efficiency and capture long-range temporal dependencies.
 %\vspace{-15pt}
 \begin{table}[htbp]
 \caption{Comparison of different time-series methods}
@@ -119,18 +119,19 @@ Building on deep learning successes, diffusion models have emerged as powerful g
 \quad ARIMA/SARIMA~\cite{2013ARIMA} & $\times$ & $\times$ \\
 \quad VAR~\cite{Zivot2003}            & $\times$ & $\times$ \\
 \quad Holt-Winters~\cite{KOEHLER2001269}   & $\times$ & $\times$ (seasonal) \\
+\quad ETS~\cite{RePEc2009}~\cite{2005Gaussian} & $\checkmark$ & $\times$ \\
 \quad Gaussian Process~\cite{2005Gaussian} & $\checkmark$ & $\times$ \\
-\quad LSTM/GRU~\cite{HSJ1997,2014Learning}       & \checkmark & $\times$ \\
-\quad DeepAR~\cite{2020DeepAR}         & $\times$ & $\times$ \\
 \midrule
 \multicolumn{3}{@{}l}{\textit{Deep Learning}} \\
+\quad LSTM/GRU~\cite{HSJ1997,2014Learning}       & \checkmark & $\times$ \\
+\quad DeepAR~\cite{2020DeepAR}         & $\times$ & $\times$ \\
 \quad WaveNet/TCN~\cite{2016WaveNet,DBLP:conf/iclr/BaiKK19}    & \checkmark & \checkmark$^\dag$ \\
 \quad Transformer~\cite{2017Attention}    & \checkmark & $\times$ \\
 \quad Informer~\cite{2020Informer}       & \checkmark & $\times$ \\
 \quad Autoformer~\cite{2021Autoformer}     & \checkmark & \checkmark$^\dag$ \\
-\quad TimeGrad~\cite{2021Autoregressive}       & $\times$ & $\times$ \\
 \midrule
 \multicolumn{3}{@{}l}{\textit{Diffusion Models}} \\
+\quad TimeGrad~\cite{2021Autoregressive}       & $\times$ & $\times$ \\
 \quad CSDI~\cite{2021CSDI}           & $\times$ & $\times$ \\
 \quad SSSD~\cite{alcaraz2022diffusion}            & \checkmark & $\times$ \\
 \quad TSDiff~\cite{naiman_utilizing_nodate}          & \checkmark & $\times$ \\
