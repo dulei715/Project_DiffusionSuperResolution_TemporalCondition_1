@@ -1,14 +1,17 @@
-\section{\solutionTotalName{} for Variable-Scale Time Series Forecasting}
-\label{sec:solution}
+\section{Method}\label{sec:solution}
 
 \subsection{Overview}
-Our proposed \textbf{\solutionTotalName{}}(\solutionSimpleName{}) introduces a novel framework that addresses four critical challenges in time series forecasting: (1) multi-scale pattern capture, (2) variable-length input handling, (3) hierarchical trend decomposition, and (4) conditional generation with uncertainty quantification. The solution integrates three key innovations:
+We propose \textbf{\solutionTotalName{}} (\solutionSimpleName{}), which transforms time series forecasting into an image generation problem. First, the time series data is decomposed into trend components at three different time scales (short-term, medium-term, and long-term) and residuals using a moving average. Then, delay embedding and Short-Time Fourier Transform (STFT) are applied to convert these components into 2D images, which are subsequently fused into a unified image representation. Next, a diffusion model (EDM) is used to learn the distribution of future images, and future images are generated through denoising sampling. Finally, the generated images are transformed back into time series data through inverse transformations, and the individual trend components are reconstructed to obtain the final future predictions.
 
-\begin{itemize}
-    \item \textbf{Resolution-Agnostic Input Representation}: Through delay embedding that transforms arbitrary-length time series into structured images
-    \item \textbf{Hierarchical Trend Extraction}: Multi-scale decomposition that automatically separates short-term fluctuations from long-term patterns
-    \item \textbf{Conditional Diffusion Process}: Noise prediction network guided by both historical context and coarse-grained trend information
-\end{itemize}
+%We propose \textbf{\solutionTotalName{}} (\solutionSimpleName{}), which introduces a novel framework that addresses four critical challenges in time series forecasting: (1) multi-scale pattern capture; (2) variable-length input handling; (3) hierarchical trend decomposition; and (4) conditional generation with uncertainty quantification. 
+%\solutionSimpleName{} integrates three key innovations:
+% \textit{Resolution-Agnostic Input Representation.} Through delay embedding that transforms arbitrary-length time series into structured images;
+%\textit{Hierarchical Trend Extraction.} Multi-scale decomposition that automatically separates short-term fluctuations from long-term patterns;
+%\textit{Conditional Diffusion Process.} Noise prediction network guided by both historical context and coarse-grained trend information.
+\solutionSimpleName{} integrates three key innovations:
+\textit{Hierarchical Trend Decomposition.} The method decomposes time series data into short-term, medium-term, and long-term trend components, along with residuals, using moving averages. This multi-scale decomposition allows for the automatic extraction of varying temporal patterns across different time horizons.
+\textit{Time Series to Image Transformation.} By applying delay embedding and Short Time Fourier Transform (STFT), the decomposed trend components are transformed into 2D images, which are then fused into a unified image representation. This resolution-agnostic approach enables the flexible handling of time series data regardless of sequence length.
+\textit{Conditional Diffusion Model.} A diffusion model (EDM) is used to learn the distribution of future images, with the noise prediction network conditioned on both historical context and the extracted trend information. This enables the model to generate future time series through denoising sampling, ensuring accurate forecasting.
 
 %\begin{figure}[t]
 %    \centering
@@ -17,45 +20,64 @@ Our proposed \textbf{\solutionTotalName{}}(\solutionSimpleName{}) introduces a n
 %    \label{fig:architecture}
 %\end{figure}
 
+
+\subsection{Hierarchical Trend Decomposition}
+%The decomposition constructs $S$ resolution levels through recursive downsampling:
+%The decomposition process constructs a pyramid of $S$ resolution levels through recursive downsampling, allowing the model to progressively capture trends at different scales. At each resolution level $s$, the trend component $\mathbf{X}_s$ is obtained by applying an average pooling operation to the previous level $\mathbf{X}_{s-1}$, with zero-padding to ensure consistent input lengths:
+%\begin{equation}
+%    \mathbf{X}_s = \mathcal{D}_s(\mathbf{X}_{s-1}) = \text{AvgPool}(\text{ZeroPad}_{2^s}(\mathbf{X}_{s-1}))
+%\end{equation}
+%
+%yielding trend components $\{\mathbf{X}_s\}_{s=1}^S$ where:
+%
+%\begin{equation}
+%    \text{Res}(\mathbf{X}_s) = \frac{\text{Res}(\mathbf{X}_1)}{2^{s-1}} \quad \text{for} \quad s = 2,...,S
+%\end{equation}
+%
+%The pyramid enables:
+%\begin{itemize}
+%    \item Coarse-level modeling of global trends ($s = S$)
+%    \item Fine-level capture of local variations ($s = 1$)
+%    \item Intermediate representations for meso-scale patterns
+%\end{itemize}
+Given three super parameters $\tau_1,\tau_2$ and $\tau_3$ with $\tau_1\leq\tau_2\leq\tau_3$, we apply \text{TrendExtraction} method by Equation~\eqref{eq:treand_extraction} to get the short-, medium- and long-term  trends, respectively.
+
+\begin{algorithm}[t]\label{alg:htd}
+	\DontPrintSemicolon
+	\KwIn{time series segment $X_0$, smoothing kernel sizes $\tau_1,\tau_2$ and $\tau_3$}
+	\KwOut{$X_1, X_2, X_3, R$}
+	\caption{Hierarchical Trend Decomposition}
+	%\begin{algorithmic}[1]
+	Initialize $R\gets X_0$\;
+	\For{$s= 1$ \textbf{to} $3$} {
+		$X_s\gets\text{AvgPool}(\text{Padding}(X_{s-1}), \tau_s)$\;
+		$R\gets R-X_s$\;
+	}
+	\Return{$X_1, X_2, X_3, R$}\;
+	%\end{algorithmic}
+\end{algorithm}
+
+
 \subsection{Resolution-Independent Input Transformation}
 The input module handles arbitrary-length sequences $x_{1:L} \in \mathbb{R}^L$ through an adaptive delay embedding:
 
 \begin{equation}
-    \mathbf{X} = \mathcal{T}(x_{1:L}; m,n) \in \mathbb{R}^{n \times q(m,n,L)}
+	\mathbf{X} = \mathcal{T}(x_{1:L}; m,n) \in \mathbb{R}^{n \times q(m,n,L)}
 \end{equation}
 
 where the transformation $\mathcal{T}$ implements:
 
 \begin{equation}
-    q(m,n,L) = \left\lfloor \frac{L - n}{m} \right\rfloor + 1 + \mathbb{I}_{\text{pad}}(L,m,n)
+	q(m,n,L) = \left\lfloor \frac{L - n}{m} \right\rfloor + 1 + \mathbb{I}_{\text{pad}}(L,m,n)
 \end{equation}
 
 with padding indicator function $\mathbb{I}_{\text{pad}}$ that dynamically adjusts for length mismatches. This guarantees:
 
 \begin{itemize}
-    \item \textbf{Dimensionality Preservation}: $\|\mathcal{T}^{-1}(\mathcal{T}(x)) - x\|_2 < \epsilon$ for $\epsilon \rightarrow 0$
-    \item \textbf{Scale Invariance}: Consistent representation for $L \in [L_{\min}, \infty)$
+	\item \textbf{Dimensionality Preservation}: $\|\mathcal{T}^{-1}(\mathcal{T}(x)) - x\|_2 < \epsilon$ for $\epsilon \rightarrow 0$
+	\item \textbf{Scale Invariance}: Consistent representation for $L \in [L_{\min}, \infty)$
 \end{itemize}
 
-\subsection{Multi-Resolution Trend Pyramid}
-The decomposition constructs $S$ resolution levels through recursive downsampling:
-
-\begin{equation}
-    \mathbf{X}_s = \mathcal{D}_s(\mathbf{X}_{s-1}) = \text{AvgPool}(\text{ZeroPad}_{2^s}(\mathbf{X}_{s-1}))
-\end{equation}
-
-yielding trend components $\{\mathbf{X}_s\}_{s=1}^S$ where:
-
-\begin{equation}
-    \text{Res}(\mathbf{X}_s) = \frac{\text{Res}(\mathbf{X}_1)}{2^{s-1}} \quad \text{for} \quad s = 2,...,S
-\end{equation}
-
-The pyramid enables:
-\begin{itemize}
-    \item Coarse-level modeling of global trends ($s = S$)
-    \item Fine-level capture of local variations ($s = 1$)
-    \item Intermediate representations for meso-scale patterns
-\end{itemize}
 
 \subsection{Conditional Diffusion Process}
 The core innovation combines:
