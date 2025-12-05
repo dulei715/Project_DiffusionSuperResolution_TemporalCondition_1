@@ -13,18 +13,12 @@ The diffusion process employs a linear noise schedule with $\beta_{\text{min}} =
 
 \subsubsection{Evaluation Metrics}
 We adopt three widely-used metrics for time series forecasting evaluation:
-
-\begin{itemize}
-    \item \textbf{Mean Absolute Error (MAE)}: 
-    $\text{MAE} = \frac{1}{H}\sum_{i=1}^{H}|\hat{y}_i - y_i|$
-    
-    \item \textbf{Root Mean Square Error (RMSE)}: 
-    $\text{RMSE} = \sqrt{\frac{1}{H}\sum_{i=1}^{H}(\hat{y}_i - y_i)^2}$
-    
-    \item \textbf{Mean Absolute Percentage Error (MAPE)}: 
-    $\text{MAPE} = \frac{100\%}{H}\sum_{i=1}^{H}\left|\frac{\hat{y}_i - y_i}{y_i}\right|$
-\end{itemize}
-
+\textit{Mean Absolute Error (MAE)}: 
+    $\text{MAE} = \frac{1}{H}\sum_{i=1}^{H}|\hat{y}_i - y_i|$;
+\textit{Root Mean Square Error (RMSE)}:
+    $\text{RMSE} = \sqrt{\frac{1}{H}\sum_{i=1}^{H}(\hat{y}_i - y_i)^2}$;
+\textit{Mean Absolute Percentage Error (MAPE)}:\\
+    $\text{MAPE} = \frac{100\%}{H}\sum_{i=1}^{H}\left|\frac{\hat{y}_i - y_i}{y_i}\right|$,
 where $H$ is the forecasting horizon, $\hat{y}_i$ is the predicted value, and $y_i$ is the ground truth.
 
 \subsubsection{Baseline Methods}
@@ -51,7 +45,7 @@ All baselines are implemented using their official codebases and tuned to optima
 
 We evaluate on four diverse time series datasets covering different domains and characteristics:
 
-\begin{table}[!t]
+\begin{table}[h]
 \centering
 \caption{Summary of benchmark datasets}
 \label{tab:datasets}
@@ -59,7 +53,7 @@ We evaluate on four diverse time series datasets covering different domains and 
 \toprule
 \textbf{Dataset} & \textbf{Length} & \textbf{Features} & \textbf{Frequency} & \textbf{Forecasting Horizon} \\
 \midrule
-Electricity (ECL) & 26,304 & 321 & Hourly & 96 (24 hours) \\
+Electricity & 26,304 & 321 & 60-min & 96 (24 hours) \\
 Traffic & 17,544 & 207 & 5-min & 288 (24 hours) \\
 Weather & 52,696 & 21 & 10-min & 144 (24 hours) \\
 \bottomrule

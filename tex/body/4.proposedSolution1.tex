@@ -40,18 +40,23 @@ We propose \textbf{\solutionTotalName{}} (\solutionSimpleName{}), which transfor
 %    \item Fine-level capture of local variations ($s = 1$)
 %    \item Intermediate representations for meso-scale patterns
 %\end{itemize}
-Given three super parameters $\tau_1,\tau_2$ and $\tau_3$ with $\tau_1\leq\tau_2\leq\tau_3$, we apply \text{TrendExtraction} method by Equation~\eqref{eq:treand_extraction} to get the short-, medium- and long-term  trends, respectively.
+Given three smoothing kernel sizes $\tau_1,\tau_2$ and $\tau_3$ with $\tau_1\leq\tau_2\leq\tau_3$, we apply \text{TrendExtraction} method by Equation~\eqref{eq:treand_extraction} to get the short-, medium- and long-term  trends, respectively.
 
-\begin{algorithm}[t]\label{alg:htd}
+Algorithm~\ref{alg:htd} shows the process of Hierarchical Trend Decomposition.
+In Algorithm~\ref{alg:htd}, we apply \text{AvgPool(Padding($\cdot$))} from $\tau_1$ to $\tau_3$ to get different trends.
+At last, the residual $R$ is calculated by $X_0-X_1-X_2-X_3$.
+
+\begin{algorithm}[t]
 	\DontPrintSemicolon
 	\KwIn{time series segment $X_0$, smoothing kernel sizes $\tau_1,\tau_2$ and $\tau_3$}
 	\KwOut{$X_1, X_2, X_3, R$}
 	\caption{Hierarchical Trend Decomposition}
+	\label{alg:htd}
 	%\begin{algorithmic}[1]
 	Initialize $R\gets X_0$\;
 	\For{$s= 1$ \textbf{to} $3$} {
 		$X_s\gets\text{AvgPool}(\text{Padding}(X_{s-1}), \tau_s)$\;
-		$R\gets R-X_s$\;
+		$R\gets R-X_1-X_2-X_3$\;
 	}
 	\Return{$X_1, X_2, X_3, R$}\;
 	%\end{algorithmic}
@@ -59,25 +64,41 @@ Given three super parameters $\tau_1,\tau_2$ and $\tau_3$ with $\tau_1\leq\tau_2
 
 
 \subsection{Resolution-Independent Input Transformation}
-The input module handles arbitrary-length sequences $x_{1:L} \in \mathbb{R}^L$ through an adaptive delay embedding:
+%The input module handles arbitrary-length sequences $x_{1:L} \in \mathbb{R}^L$ through an adaptive delay embedding:
+%
+%\begin{equation}
+%	\mathbf{X} = \mathcal{T}(x_{1:L}; m,n) \in \mathbb{R}^{n \times q(m,n,L)}
+%\end{equation}
+%
+%where the transformation $\mathcal{T}$ implements:
+%
+%\begin{equation}
+%	q(m,n,L) = \left\lfloor \frac{L - n}{m} \right\rfloor + 1 + \mathbb{I}_{\text{pad}}(L,m,n)
+%\end{equation}
+%
+%with padding indicator function $\mathbb{I}_{\text{pad}}$ that dynamically adjusts for length mismatches. This guarantees:
+%
+%\begin{itemize}
+%	\item \textbf{Dimensionality Preservation}: $\|\mathcal{T}^{-1}(\mathcal{T}(x)) - x\|_2 < \epsilon$ for $\epsilon \rightarrow 0$
+%	\item \textbf{Scale Invariance}: Consistent representation for $L \in [L_{\min}, \infty)$
+%\end{itemize}
+After getting the short-, medium- and long-term trends as well as the residual, we apply adaptive delay embedding to transform the short-, medium-term trends and residual into 2-D image, we apply STFT to transform the long-term trend into 2-D image.
+Algorithm~\ref{alg:to_img} shows the process of Resolution-Independent Input Transformation.
 
-\begin{equation}
-	\mathbf{X} = \mathcal{T}(x_{1:L}; m,n) \in \mathbb{R}^{n \times q(m,n,L)}
-\end{equation}
-
-where the transformation $\mathcal{T}$ implements:
-
-\begin{equation}
-	q(m,n,L) = \left\lfloor \frac{L - n}{m} \right\rfloor + 1 + \mathbb{I}_{\text{pad}}(L,m,n)
-\end{equation}
-
-with padding indicator function $\mathbb{I}_{\text{pad}}$ that dynamically adjusts for length mismatches. This guarantees:
-
-\begin{itemize}
-	\item \textbf{Dimensionality Preservation}: $\|\mathcal{T}^{-1}(\mathcal{T}(x)) - x\|_2 < \epsilon$ for $\epsilon \rightarrow 0$
-	\item \textbf{Scale Invariance}: Consistent representation for $L \in [L_{\min}, \infty)$
-\end{itemize}
-
+\begin{algorithm}[h]
+	\DontPrintSemicolon
+	\KwIn{short-term trend $X_1$, medium-term trend $X_2$, long-term trend $X_3$, residual $R$}
+	\KwOut{trend images $\hat{X}_1,\hat{X}_2,\hat{X}_3,\hat{R}$}
+	\caption{Resolution-Independent Input Transformation}
+	\label{alg:to_img}
+	%\begin{algorithmic}[1]
+	$\hat{X}_1\gets\text{AdaptiveDelayEmbedding}(X_1)$\;
+	$\hat{X}_2\gets\text{AdaptiveDelayEmbedding}(X_2)$\;
+	$\hat{R}\gets\text{AdaptiveDelayEmbedding}(R)$\;
+	$\hat{X}_3\gets\text{STFT}(X_3)$\;
+	\Return{$X_1, X_2, X_3, R$}\;
+	%\end{algorithmic}
+\end{algorithm}
 
 \subsection{Conditional Diffusion Process}
 The core innovation combines:

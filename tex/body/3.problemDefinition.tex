@@ -62,7 +62,9 @@ There are two effective transformations, named \textit{Delay Embeddings}~\cite{t
 			x_n & \cdots & x_L
 		\end{bmatrix} \in \mathbb{R}^{n \times q},
 	\end{equation}
-where $m$ and $n$ are user-defined parameters, and $q = \lfloor (L-n)/m \rfloor$ determines the number of time steps used in the embedding.
+where $m$ and $n$ are the delay and embedding dimension, respectively, and $q = \lfloor (L-n)/m \rfloor$ determines the number of time steps used in the embedding.
+When the parameter $m$ and $n$ are adaptive, it becomes adaptive delay embedding.
+In adaptive delay embedding, the delay $m$ and embedding dimension $n$ are dynamically chosen based on the characteristics of the time series, allowing for more flexible handling of different types of time series and better capturing of the nonlinear and complex dynamic relationships within the data.
 
 \textit{Short Time Fourier Transform.} STFT is a widely used technique for mapping signals from the time domain to the frequency domain. 
 To maintain the temporal characteristics, STFT utilizes a sliding window approach, segmenting the input signal and applying the Fast Fourier Transform (FFT) to each segment.
