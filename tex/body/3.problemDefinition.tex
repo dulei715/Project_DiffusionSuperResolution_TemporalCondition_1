@@ -1,79 +1,113 @@
-\section{Background}\label{sec:background}
+% \section{Background}\label{sec:background}
 
-\textbf{Diffusion Models.}
-%Diffusion models~\cite{NEURIPS2020_4c5bcfec} are latent variable models with forward (noising) and backward (denoising) processes.
-Diffusion models~\cite{NEURIPS2020_4c5bcfec} are a class of latent variable models that consist of two key processes: a forward (noising) process and a backward (denoising) process.
+% \textbf{Diffusion Models.}
+% %Diffusion models~\cite{NEURIPS2020_4c5bcfec} are latent variable models with forward (noising) and backward (denoising) processes.
+% Diffusion models~\cite{NEURIPS2020_4c5bcfec} are a class of latent variable models that consist of two key processes: a forward (noising) process and a backward (denoising) process.
 
-%\noindent
-\textit{Forward Diffusion.}
-%Given input $\mathbf{x}^0$, the forward process gradually adds Gaussian noise over $K$ steps:
-Starting from an initial input $\mathbf{x}^0$, the forward process gradually introduces Gaussian noise over $K$ steps. At each step $k$, the distribution of the noisy data $\mathbf{x}^k$ is given by:
-\begin{equation}
-	q(\mathbf{x}^k \mid \mathbf{x}^{k-1}) = \mathcal{N}(\mathbf{x}^k; \sqrt{1-\beta_k}\mathbf{x}^{k-1}, \beta_k\mathbf{I}), \quad k=1,\dots,K,
-\end{equation}
-where $\beta_k \in [0,1]$ controls the amount of noise added at each step. The closed-form expression for the data at step $k$ is:
-\begin{equation}
-	\mathbf{x}^k = \sqrt{\bar{\alpha}_k}\mathbf{x}^0 + \sqrt{1-\bar{\alpha}_k}\epsilon, \quad \epsilon \sim \mathcal{N}(\mathbf{0},\mathbf{I}),
-\end{equation}
-with $\bar{\alpha}_k = \prod_{s=1}^k (1-\beta_s)$ ,  which accumulates the effect of the noise over multiple steps.
+% %\noindent
+% \textit{Forward Diffusion.}
+% %Given input $\mathbf{x}^0$, the forward process gradually adds Gaussian noise over $K$ steps:
+% Starting from an initial input $\mathbf{x}^0$, the forward process gradually introduces Gaussian noise over $K$ steps. At each step $k$, the distribution of the noisy data $\mathbf{x}^k$ is given by:
+% \begin{equation}
+% 	q(\mathbf{x}^k \mid \mathbf{x}^{k-1}) = \mathcal{N}(\mathbf{x}^k; \sqrt{1-\beta_k}\mathbf{x}^{k-1}, \beta_k\mathbf{I}), \quad k=1,\dots,K,
+% \end{equation}
+% where $\beta_k \in [0,1]$ controls the amount of noise added at each step. The closed-form expression for the data at step $k$ is:
+% \begin{equation}
+% 	\mathbf{x}^k = \sqrt{\bar{\alpha}_k}\mathbf{x}^0 + \sqrt{1-\bar{\alpha}_k}\epsilon, \quad \epsilon \sim \mathcal{N}(\mathbf{0},\mathbf{I}),
+% \end{equation}
+% with $\bar{\alpha}_k = \prod_{s=1}^k (1-\beta_s)$ ,  which accumulates the effect of the noise over multiple steps.
 
-%\noindent
-\textit{Reverse Denoising.}
-In the backward process, the goal is to iteratively denoise the corrupted data, progressively recovering cleaner versions of the data. The denoising model predicts the less noisy state $\mathbf{x}^{k-1}$ from the noisy data $\mathbf{x}^k$. The distribution of the denoised data is modeled as:
-\begin{equation}
-	p_\theta(\mathbf{x}^{k-1} \mid \mathbf{x}^k) = \mathcal{N}(\mathbf{x}^{k-1}; \mu_\theta(\mathbf{x}^k, k), \sigma_k^2\mathbf{I}),
-\end{equation}
-where $\mu_\theta$ is parameterized by a neural network. To train the model effectively, two common strategies are employed:
-\begin{itemize}
-	\item \textbf{Noise prediction}: Minimize $\mathcal{L}_\epsilon = \mathbb{E}_{k,\mathbf{x}^0,\epsilon} \|\epsilon - \epsilon_\theta(\mathbf{x}^k, k)\|^2$, which aims to predict the noise $\epsilon$ added in the forward process.
-	\item \textbf{Data prediction}: Minimize $\mathcal{L}_{\mathbf{x}} = \mathbb{E}_{\mathbf{x}^0,\epsilon,k} \|\mathbf{x}^0 - \mathbf{x}_\theta(\mathbf{x}^k, k)\|^2$,  which aims to directly predict the clean data $\mathbf{x}^0$ from the noisy data $\mathbf{x}^k$.
-\end{itemize}
+% %\noindent
+% \textit{Reverse Denoising.}
+% In the backward process, the goal is to iteratively denoise the corrupted data, progressively recovering cleaner versions of the data. The denoising model predicts the less noisy state $\mathbf{x}^{k-1}$ from the noisy data $\mathbf{x}^k$. The distribution of the denoised data is modeled as:
+% \begin{equation}
+% 	p_\theta(\mathbf{x}^{k-1} \mid \mathbf{x}^k) = \mathcal{N}(\mathbf{x}^{k-1}; \mu_\theta(\mathbf{x}^k, k), \sigma_k^2\mathbf{I}),
+% \end{equation}
+% where $\mu_\theta$ is parameterized by a neural network. To train the model effectively, two common strategies are employed:
+% \begin{itemize}
+% 	\item \textbf{Noise prediction}: Minimize $\mathcal{L}_\epsilon = \mathbb{E}_{k,\mathbf{x}^0,\epsilon} \|\epsilon - \epsilon_\theta(\mathbf{x}^k, k)\|^2$, which aims to predict the noise $\epsilon$ added in the forward process.
+% 	\item \textbf{Data prediction}: Minimize $\mathcal{L}_{\mathbf{x}} = \mathbb{E}_{\mathbf{x}^0,\epsilon,k} \|\mathbf{x}^0 - \mathbf{x}_\theta(\mathbf{x}^k, k)\|^2$,  which aims to directly predict the clean data $\mathbf{x}^0$ from the noisy data $\mathbf{x}^k$.
+% \end{itemize}
 
-\noindent
-\textbf{Conditional Diffusion Models.}
-For time series prediction, the denoising process is conditioned on past observations $\mathbf{c} = \mathcal{F}\left(\mathbf{x}_{-L+1:0}^0\right)$, where $\mathcal{F}$ represents a conditioning function (such as CNN or Transformer). The model can be expressed as:
-\begin{equation}
-	p_\theta\left(\mathbf{x}_{1:H}^{0:K} \mid \mathbf{c}\right) = p_\theta\left(\mathbf{x}_{1:H}^K\right) \prod_{k=1}^K p_\theta\left(\mathbf{x}_{1:H}^{k-1} \mid \mathbf{x}_{1:H}^k, \mathbf{c}\right),
-\end{equation}
-where the conditional probability $p_\theta\left(\mathbf{x}_{1:H}^{k-1} \mid \mathbf{x}_{1:H}^k, \mathbf{c}\right)$ reflects the dependence on both the noisy input at step $k$ and the context provided by the past observations $\mathbf{c}$.
-The conditional mean $\mu_\theta\left(\mathbf{x}^k, k \mid \mathbf{c}\right)$ is computed by leveraging both the noisy input and the conditioning context.
+% \noindent
+% \textbf{Conditional Diffusion Models.}
+% For time series prediction, the denoising process is conditioned on past observations $\mathbf{c} = \mathcal{F}\left(\mathbf{x}_{-L+1:0}^0\right)$, where $\mathcal{F}$ represents a conditioning function (such as CNN or Transformer). The model can be expressed as:
+% \begin{equation}
+% 	p_\theta\left(\mathbf{x}_{1:H}^{0:K} \mid \mathbf{c}\right) = p_\theta\left(\mathbf{x}_{1:H}^K\right) \prod_{k=1}^K p_\theta\left(\mathbf{x}_{1:H}^{k-1} \mid \mathbf{x}_{1:H}^k, \mathbf{c}\right),
+% \end{equation}
+% where the conditional probability $p_\theta\left(\mathbf{x}_{1:H}^{k-1} \mid \mathbf{x}_{1:H}^k, \mathbf{c}\right)$ reflects the dependence on both the noisy input at step $k$ and the context provided by the past observations $\mathbf{c}$.
+% The conditional mean $\mu_\theta\left(\mathbf{x}^k, k \mid \mathbf{c}\right)$ is computed by leveraging both the noisy input and the conditioning context.
 
-\noindent
-\textbf{Hierarchical Trend Decomposition (HTD).}
-Hierarchical Trend Decomposition~\cite{shen_multi-resolution_2024} is typically used to decompose time series data to obtain data of different period lengths.
-Given a time series segment $X_0$ from the lookback window, its trend components are extracted sequentially by the \text{TrendExtraction} method as follows:
-\begin{equation}\label{eq:treand_extraction}
-	\begin{aligned}
-		X_s=\text{AvgPool}(\text{Padding}(X_{s-1}), \tau_s), \;\;\; s=1,\dots,S-1,
-	\end{aligned}
-\end{equation}
-where \text{AvgPool} represents the average pooling operation~\cite{2021Autoformer}, and \text{Padding} ensures that the lengths of $X_{s-1}$ and $X_s$ remain consistent. The smoothing kernel size $\tau_s$ increases with $s$, enabling the extraction of trends at progressively coarser resolutions. The same procedure is applied to the segment $Y_0$ in the forecast window, resulting in trend components $\{Y_s\}_{s=1,\dots,S-1}$.
+% \noindent
+% \textbf{Hierarchical Trend Decomposition (HTD).}
+% Hierarchical Trend Decomposition~\cite{shen_multi-resolution_2024} is typically used to decompose time series data to obtain data of different period lengths.
+% Given a time series segment $X_0$ from the lookback window, its trend components are extracted sequentially by the \text{TrendExtraction} method as follows:
+% \begin{equation}\label{eq:treand_extraction}
+% 	\begin{aligned}
+% 		X_s=\text{AvgPool}(\text{Padding}(X_{s-1}), \tau_s), \;\;\; s=1,\dots,S-1,
+% 	\end{aligned}
+% \end{equation}
+% where \text{AvgPool} represents the average pooling operation~\cite{2021Autoformer}, and \text{Padding} ensures that the lengths of $X_{s-1}$ and $X_s$ remain consistent. The smoothing kernel size $\tau_s$ increases with $s$, enabling the extraction of trends at progressively coarser resolutions. The same procedure is applied to the segment $Y_0$ in the forecast window, resulting in trend components $\{Y_s\}_{s=1,\dots,S-1}$.
 
-\noindent
-\textbf{Time Series to Image Transforms.}
-To enhance diffusion models, time series are often mapped to images using invertible transforms. 
-There are two effective transformations, named \textit{Delay Embeddings}~\cite{takens2006detecting} and \textit{Short Time Fourier Transform}~(STFT)~\cite{DBLP:conf/icassp/GriffinL83}.
+% \noindent
+% \textbf{Time Series to Image Transforms.}
+% To enhance diffusion models, time series are often mapped to images using invertible transforms. 
+% There are two effective transformations, named \textit{Delay Embeddings}~\cite{takens2006detecting} and \textit{Short Time Fourier Transform}~(STFT)~\cite{DBLP:conf/icassp/GriffinL83}.
 
-\textit{Delay Embedding.} For a univariate series $x_{1:L}$, it constructs a matrix $X$ as follows:
-	\begin{equation}
-		X = \begin{bmatrix}
-			x_1 & x_{m+1} & \cdots \\
-			\vdots & \ddots & \vdots \\
-			x_n & \cdots & x_L
-		\end{bmatrix} \in \mathbb{R}^{n \times q},
-	\end{equation}
-where $m$ and $n$ are the delay and embedding dimension, respectively, and $q = \lfloor (L-n)/m \rfloor$ determines the number of time steps used in the embedding.
-When the parameter $m$ and $n$ are adaptive, it becomes adaptive delay embedding.
-In adaptive delay embedding, the delay $m$ and embedding dimension $n$ are dynamically chosen based on the characteristics of the time series, allowing for more flexible handling of different types of time series and better capturing of the nonlinear and complex dynamic relationships within the data.
+% \textit{Delay Embedding.} For a univariate series $x_{1:L}$, it constructs a matrix $X$ as follows:
+% 	\begin{equation}
+% 		X = \begin{bmatrix}
+% 			x_1 & x_{m+1} & \cdots \\
+% 			\vdots & \ddots & \vdots \\
+% 			x_n & \cdots & x_L
+% 		\end{bmatrix} \in \mathbb{R}^{n \times q},
+% 	\end{equation}
+% where $m$ and $n$ are the delay and embedding dimension, respectively, and $q = \lfloor (L-n)/m \rfloor$ determines the number of time steps used in the embedding.
+% When the parameter $m$ and $n$ are adaptive, it becomes adaptive delay embedding.
+% In adaptive delay embedding, the delay $m$ and embedding dimension $n$ are dynamically chosen based on the characteristics of the time series, allowing for more flexible handling of different types of time series and better capturing of the nonlinear and complex dynamic relationships within the data.
 
-\textit{Short Time Fourier Transform.} STFT is a widely used technique for mapping signals from the time domain to the frequency domain. 
-To maintain the temporal characteristics, STFT utilizes a sliding window approach, segmenting the input signal and applying the Fast Fourier Transform (FFT) to each segment.
-For an input signal $\mathbf{x} \in \mathbb{R}^{L \times K}$, the result of the STFT is an image $\mathbf{x}_{\text{img}} \in \mathbb{R}^{2K \times H \times W}$, where the channels are expanded to accommodate both the real and imaginary components, and $H$ and $W$ are determined by user-defined parameters. Since STFT requires a minimum window size, shorter sequences might need to be interpolated to meet length requirements.
-One of the advantages of STFT is that it is invertible through the reverse STFT, which incurs negligible information loss. In contrast to standard practices in audio processing, we bypass the computation of the spectrogram from the STFT, thus avoiding the complexities of inverse transformations.
+% \textit{Short Time Fourier Transform.} STFT is a widely used technique for mapping signals from the time domain to the frequency domain. 
+% To maintain the temporal characteristics, STFT utilizes a sliding window approach, segmenting the input signal and applying the Fast Fourier Transform (FFT) to each segment.
+% For an input signal $\mathbf{x} \in \mathbb{R}^{L \times K}$, the result of the STFT is an image $\mathbf{x}_{\text{img}} \in \mathbb{R}^{2K \times H \times W}$, where the channels are expanded to accommodate both the real and imaginary components, and $H$ and $W$ are determined by user-defined parameters. Since STFT requires a minimum window size, shorter sequences might need to be interpolated to meet length requirements.
+% One of the advantages of STFT is that it is invertible through the reverse STFT, which incurs negligible information loss. In contrast to standard practices in audio processing, we bypass the computation of the spectrogram from the STFT, thus avoiding the complexities of inverse transformations.
 
-These two transformations allow diffusion models to exploit spatial inductive biases, leading to enhanced generation performance.
+% These two transformations allow diffusion models to exploit spatial inductive biases, leading to enhanced generation performance.
 
-\noindent
+\section{Problem Statement}\label{sec:ps}
+
+% \textbf{Diffusion Models.}
+% Diffusion models~\cite{NEURIPS2020_4c5bcfec} consist of a forward noising and a backward denoising process. 
+% \textit{Forward Diffusion} gradually adds Gaussian noise over $K$ steps. The closed-form expression for step $k$ is:
+% \begin{equation}
+%     \mathbf{x}^k = \sqrt{\bar{\alpha}_k}\mathbf{x}^0 + \sqrt{1-\bar{\alpha}_k}\epsilon, \quad \epsilon \sim \mathcal{N}(\mathbf{0},\mathbf{I}),
+% \end{equation}
+% where $\bar{\alpha}_k = \prod_{s=1}^k (1-\beta_s)$.
+% \textit{Reverse Denoising} recovers clean data from noise, typically by predicting the noise $\epsilon$ or the clean data $\mathbf{x}^0$ via:
+% \begin{equation}
+%     \mathcal{L}_\epsilon = \mathbb{E} \|\epsilon - \epsilon_\theta(\mathbf{x}^k, k)\|^2 \quad \text{or} \quad \mathcal{L}_{\mathbf{x}} = \mathbb{E} \|\mathbf{x}^0 - \mathbf{x}_\theta(\mathbf{x}^k, k)\|^2.
+% \end{equation}
+
+% \textbf{Conditional Diffusion Models.}
+% For time series prediction, the denoising process is conditioned on historical context $\mathbf{c} = \mathcal{F}(\mathbf{x}_{-L+1:0}^0)$. The conditional distribution is defined as:
+% \begin{equation}
+%     p_\theta(\mathbf{x}_{1:H}^{0:K} \mid \mathbf{c}) = p_\theta(\mathbf{x}_{1:H}^K) \prod_{k=1}^K p_\theta(\mathbf{x}_{1:H}^{k-1} \mid \mathbf{x}_{1:H}^k, \mathbf{c}),
+% \end{equation}
+% where the mean $\mu_\theta(\mathbf{x}^k, k \mid \mathbf{c})$ is computed by leveraging both the noisy input and the conditioning context $\mathbf{c}$.
+
+% \textbf{Hierarchical Trend Decomposition (HTD).}
+% HTD~\cite{shen_multi-resolution_2024} decomposes time series into multi-scale trends. Given a series $X_0$, trend components are extracted sequentially:
+% \begin{equation}\label{eq:treand_extraction}
+%     X_s = \text{AvgPool}(\text{Padding}(X_{s-1}), \tau_s), \;\;\; s=1,\dots,S-1,
+% \end{equation}
+% where $\text{AvgPool}$ is average pooling and $\tau_s$ (increasing with $s$) controls the smoothing kernel size, enabling extraction of progressively coarser trends.
+
+% \textbf{Time Series to Image Transforms.}
+% Time series are mapped to images using invertible transforms to exploit spatial inductive biases~\cite{takens2006detecting,DBLP:conf/icassp/GriffinL83}:
+% \begin{itemize}
+%     \item \textbf{Delay Embedding:} For a univariate series $x_{1:L}$, it constructs a matrix $X \in \mathbb{R}^{n \times q}$ where $n$ is the embedding dimension and $q$ is the number of time steps. Adaptive variants dynamically adjust $m$ and $n$ to capture complex dynamics.
+%     \item \textbf{Short Time Fourier Transform (STFT):} Maps the signal to the frequency domain using a sliding window. For input $\mathbf{x} \in \mathbb{R}^{L \times K}$, STFT outputs $\mathbf{x}_{\text{img}} \in \mathbb{R}^{2K \times H \times W}$ (storing real/imaginary parts). It is invertible with negligible information loss.
+% \end{itemize}
+% \noindent
 \textbf{Problem Statement.}
 %Given a time 
 %Time series forecasting aims to predict future values $\mathbf{x}_{1:H}^0 \in \mathbb{R}^{d \times H}$ given past observations $\mathbf{x}_{-L+1:0}^0 \in \mathbb{R}^{d \times L}$, where $d$ is the number of variables, $H$ is the forecast horizon, and $L$ is the lookback window length. The core challenge lies in modeling the conditional distribution:
